@@ -1,0 +1,22 @@
+Code	Sector 
+101	Basic Materials	= XLB 
+
+102	Consumer cyclical = XLY
+
+103	Financial Services = XLF
+	
+104	Real Estate = XLRE	
+
+205	Consumer defensive = XLP
+
+206	Healthcare = XLV
+	
+207	Utilities = XLU
+	
+308	Communication Services = XLC
+	
+309	Energy = XLE
+	
+310	Industrials =  XLI
+
+311	Technology = XLK
