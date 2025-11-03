@@ -5,7 +5,10 @@ import mplfinance as mpf
 import os
 
 # --- Step 1: Load tickers from CSV ---
-csv_filename = "../sector_tickers/healthcare.csv"
+csv_filename = "../sector_tickers/industrial.csv"
+
+sectorName = csv_filename.split("/")[-1].replace(".csv", "")
+
 tickers = pd.read_csv(csv_filename, header=None).iloc[0].dropna().tolist()
 if len(tickers) == 1:
     tickers = tickers[0].split(',')
@@ -93,10 +96,6 @@ print(f"\n📊 Correlations calculated for {len(correlations)} tickers")
 high_corr_tickers = [t for t, corr in correlations.items() if corr >= 0.50]
 print(f"✅ Tickers with ≥50% correlation to sector index: {len(high_corr_tickers)}")
 
-if len(high_corr_tickers) == 0:
-    print("⚠️ No tickers found with ≥80% correlation. Lowering threshold to 70%...")
-    high_corr_tickers = [t for t, corr in correlations.items() if corr >= 0.70]
-    print(f"✅ Tickers with ≥70% correlation: {len(high_corr_tickers)}")
 
 # Get the most recent trading day and calculate returns for high correlation tickers only
 latest_price = adj_close[high_corr_tickers].iloc[-1]
@@ -123,11 +122,11 @@ top_week.index = range(1, len(top_week) + 1)
 top_month = performance.nlargest(20, 'Month_Change_%')[['Ticker', 'Month_Change_%', 'Correlation']].reset_index(drop=True)
 top_month.index = range(1, len(top_month) + 1)
 
-print("\n📈 TOP 20 PERFORMERS - LAST WEEK (≥80% Correlation)")
+print("\n📈 TOP 20 PERFORMERS - LAST WEEK (≥50% Correlation)")
 print("-" * 60)
 print(top_week.to_string())
 
-print("\n📈 TOP 20 PERFORMERS - LAST MONTH (≥80% Correlation)")
+print("\n📈 TOP 20 PERFORMERS - LAST MONTH (≥50% Correlation)")
 print("-" * 60)
 print(top_month.to_string())
 
@@ -152,7 +151,7 @@ df.dropna(inplace=True)
 # --- Step 8: Save chart data to CSV ---
 # Extract base filename without path and extension
 base_filename = os.path.splitext(os.path.basename(csv_filename))[0]
-output_csv = f"{base_filename}.data.csv"
+output_csv = f"../chart_data/{base_filename}.data.csv"
 
 # Save the OHLC data to CSV
 df.to_csv(output_csv)
@@ -164,7 +163,7 @@ last_candle_date = df.index[-1]
 last_candle_str = last_candle_date.strftime('%Y-%m-%d %H:%M')
 
 # Create title with last candle date
-chart_title = f'Low cap healthcare stock MA:25\nLast candle: {last_candle_str}'
+chart_title = f'{sectorName} MA:25\nLast candle: {last_candle_str}'
 
 mpf.plot(
     df,
@@ -174,7 +173,9 @@ mpf.plot(
     ylabel='Index Value',
     mav=(25,),
     volume=False,
-    figsize=(12, 6)
+    figsize=(12, 6),
+    tight_layout=True
 )
+
 print(f"\n✅ All data fetched and processed successfully!")
 print(f"📅 Last candle date: {last_candle_str}")
