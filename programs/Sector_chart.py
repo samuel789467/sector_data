@@ -5,7 +5,7 @@ import mplfinance as mpf
 import os
 
 # --- Step 1: Load tickers from CSV ---
-csv_filename = "../sector_tickers/industrial.csv"
+csv_filename = "../sector_tickers/utilities.csv"
 
 sectorName = csv_filename.split("/")[-1].replace(".csv", "")
 
