@@ -165,7 +165,7 @@ for csv_filename in sector_files:
         
         # --- Step 9: Save chart data to CSV ---
         base_filename = os.path.splitext(os.path.basename(csv_filename))[0]
-        output_csv = f"../chart_data/{base_filename}.data.csv"
+        output_csv = f"../chart_data_low/{base_filename}.data.csv"
         df.to_csv(output_csv)
         print(f"\n💾 Chart data saved to: {output_csv}")
         
@@ -174,7 +174,7 @@ for csv_filename in sector_files:
         last_candle_str = last_candle_date.strftime('%Y-%m-%d %H:%M')
         chart_title = f'{sectorName} MA:25\nLast candle: {last_candle_str}'
         
-        output_png = f"../chart_pics/{base_filename}.png"
+        output_png = f"../chart_pics_low/{base_filename}.png"
         
         # Create the plot and save
         save_dict = dict(fname=output_png, dpi=100, bbox_inches='tight')
