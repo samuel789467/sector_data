@@ -9,7 +9,7 @@ import os
 import glob
 
 # --- Get all sector CSV files ---
-sector_files = glob.glob("../sector_tickers/*.csv")
+sector_files = glob.glob("../lowcap_sector_tickers/*.csv")
 print(f"Found {len(sector_files)} sector files to process\n")
 
 for csv_filename in sector_files:
