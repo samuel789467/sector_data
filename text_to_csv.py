@@ -17,4 +17,4 @@ def extract_tickers_to_csv(input_file, output_file):
     print(f"Extracted {len(tickers)} tickers: {', '.join(tickers)}")
 
 if __name__ == "__main__":
-    extract_tickers_to_csv("102-XLY.txt", "consumer_cyclical_mid.csv")
+    extract_tickers_to_csv("311-XLK.txt", "2B-10B_sector_tickers/technology_mid.csv")
