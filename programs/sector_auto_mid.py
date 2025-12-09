@@ -89,7 +89,7 @@ for csv_filename in sector_files:
         total_mc = sum(market_caps.values())
         weights = {t: mc / total_mc for t, mc in market_caps.items()}
         
-        returns = adj_close.pct_change().dropna()
+        returns = adj_close.pct_change(fill_method=None).dropna()
         weighted_returns = returns.mul(pd.Series(weights), axis=1).sum(axis=1)
         index = (1 + weighted_returns).cumprod() * 100
         
@@ -99,7 +99,7 @@ for csv_filename in sector_files:
         # Calculate correlations with the sector index
         correlations = {}
         for ticker in adj_close.columns:
-            ticker_returns = adj_close[ticker].pct_change().dropna()
+            ticker_returns = adj_close[ticker].pct_change(fill_method=None).dropna()
             aligned_data = pd.concat([ticker_returns, weighted_returns], axis=1).dropna()
             if len(aligned_data) > 20:
                 corr = aligned_data.iloc[:, 0].corr(aligned_data.iloc[:, 1])
