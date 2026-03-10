@@ -10,9 +10,8 @@ import glob
 import concurrent.futures
 
 
-# ================================
+
 # SETTINGS
-# ================================
 
 INPUT_DIR = "../2B-10B_sector_tickers"
 OUTPUT_CSV_DIR = "../chart_data_mid"
@@ -22,9 +21,9 @@ os.makedirs(OUTPUT_CSV_DIR, exist_ok=True)
 os.makedirs(OUTPUT_IMG_DIR, exist_ok=True)
 
 
-# ================================
-# FAST + RELIABLE MARKET CAP FETCH
-# ================================
+# 
+# RELIABLE MARKET CAP FETCH
+
 
 def get_market_cap(ticker, adj_close):
 
@@ -55,9 +54,8 @@ def get_market_cap(ticker, adj_close):
     return ticker, None
 
 
-# ================================
+
 # PROCESS FILES
-# ================================
 
 sector_files = glob.glob(f"{INPUT_DIR}/*.csv")
 
@@ -72,9 +70,9 @@ for csv_filename in sector_files:
 
     try:
 
-        # ----------------
+        
         # LOAD TICKERS
-        # ----------------
+        
 
         base_filename = os.path.splitext(
             os.path.basename(csv_filename)
@@ -97,9 +95,9 @@ for csv_filename in sector_files:
         print(f"Tickers loaded: {len(tickers)}")
 
 
-        # ----------------
+        
         # DOWNLOAD PRICES
-        # ----------------
+        
 
         print("Downloading price data...")
 
@@ -114,9 +112,9 @@ for csv_filename in sector_files:
         )
 
 
-        # ----------------
+        
         # FILTER VALID
-        # ----------------
+        
 
         valid = []
         missing = []
@@ -161,10 +159,9 @@ for csv_filename in sector_files:
         # ----------------------------
 
 
-        # ----------------
+       
         # MARKET CAPS
-        # ----------------
-
+        
         print("Fetching market caps...")
 
         market_caps = {}
@@ -204,9 +201,8 @@ for csv_filename in sector_files:
             continue
 
 
-        # ----------------
+        
         # BUILD INDEX
-        # ----------------
 
         adj_close = adj_close[list(market_caps.keys())]
 
@@ -223,9 +219,8 @@ for csv_filename in sector_files:
         index = (1 + weighted_returns).cumprod() * 100
 
 
- # ----------------
-# CORRELATIONS (windowed)
-# ----------------
+
+        # CORRELATIONS 
 
         def compute_correlations(tickers, adj_close, weighted_returns, window):
             correlations = {}
@@ -233,26 +228,25 @@ for csv_filename in sector_files:
                 r = adj_close[ticker].pct_change()
                 aligned = pd.concat([r, weighted_returns], axis=1).dropna()
                 aligned = aligned.iloc[-window:]
-                if len(aligned) >= 3:          # <-- was > 5, now >= 3
+                if len(aligned) >= 3:          
                     corr = aligned.iloc[:, 0].corr(aligned.iloc[:, 1])
-                    if not np.isnan(corr):     # <-- only store valid results
+                    if not np.isnan(corr):     
                         correlations[ticker] = corr
             return correlations
 
         weekly_corr  = compute_correlations(adj_close.columns, adj_close, weighted_returns, window=5)
         monthly_corr = compute_correlations(adj_close.columns, adj_close, weighted_returns, window=21)
 
-        # Filter to ≥0.50 using the FULL-period correlation (as before) for index membership
+        
         full_corr = compute_correlations(adj_close.columns, adj_close, weighted_returns, window=len(weighted_returns))
         high_corr = [t for t, c in full_corr.items() if c >= 0.50]
 
         print(f"Tickers ≥50% correlation (full period): {len(high_corr)}")
 
 
-        # ----------------
+       
         # PERFORMANCE
-        # ----------------
-
+        
         if len(high_corr) > 0:
 
             latest = adj_close[high_corr].iloc[-1]
@@ -285,10 +279,9 @@ for csv_filename in sector_files:
 
 
 
-        # ----------------
+      
         # BUILD REALISTIC OHLC
-        # ----------------
-
+       
         df = pd.DataFrame(index=index.index)
 
         df["Close"] = index
@@ -311,9 +304,7 @@ for csv_filename in sector_files:
         df.dropna(inplace=True)
 
 
-        # ----------------
         # SAVE CSV
-        # ----------------
 
         csv_out = (
             f"{OUTPUT_CSV_DIR}/"
@@ -325,9 +316,7 @@ for csv_filename in sector_files:
         print(f"Saved CSV: {csv_out}")
 
 
-        # ----------------
         # SAVE CHART
-        # ----------------
 
         last_date = df.index[-1]
 
